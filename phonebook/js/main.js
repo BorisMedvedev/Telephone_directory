@@ -156,6 +156,7 @@ import { data } from '../../data.js';
       list: table.tbody,
       logo,
       btnAdd: buttonGroup.btns[0],
+      btnDel: buttonGroup.btns[1],
       formOverlay: form.overlay,
       form: form.form,
     };
@@ -163,7 +164,7 @@ import { data } from '../../data.js';
 
   const createRow = ({ name: firstName, surname, phone }) => {
     const tr = document.createElement('tr');
-    tr.classList.add('tr');
+    tr.classList.add('contact');
     const tdDel = document.createElement('td');
     const tdName = document.createElement('td');
     tdName.textContent = firstName;
@@ -209,19 +210,44 @@ import { data } from '../../data.js';
   const init = (selector, title) => {
     const app = document.querySelector(selector);
     const phoneBook = renderPhoneBook(app, title);
-    const { list, logo, btnAdd, formOverlay } = phoneBook;
+    const { list, logo, btnAdd, formOverlay, btnDel } = phoneBook;
 
     const allRow = renderContacts(list, data);
     hoverRow(allRow, logo);
     btnAdd.addEventListener('click', () => {
       formOverlay.classList.add('is-visible');
     });
+
     const close = document.querySelector('.close');
     formOverlay.addEventListener('click', (e) => {
       if (e.target === formOverlay || e.target === close) {
         formOverlay.classList.remove('is-visible');
       }
     });
+
+    btnDel.addEventListener('click', () => {
+      const allDelete = document.querySelectorAll('.delete');
+      allDelete.forEach((el) => {
+        el.classList.toggle('is-visible');
+      });
+    });
+
+    list.addEventListener('click', (e) => {
+      if (e.target.closest('.del-icon')) {
+        if (confirm('Точно хотите удалить ?')) {
+          e.target.closest('.contact').remove();
+        }
+      }
+    });
+
+    setTimeout(() => {
+      const contact = createRow({
+        name: 'Борис',
+        surname: 'Медведев',
+        phone: '+79876543210',
+      });
+      list.append(contact);
+    }, 3000);
   };
 
   window.phoneBookInit = init;
