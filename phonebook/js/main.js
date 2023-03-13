@@ -151,11 +151,13 @@ import { data } from '../../data.js';
     header.headerContainer.append(logo);
     main.mainContainer.append(buttonGroup.btnWrapper, table, form.overlay);
     app.append(header, main, footer);
+
     return {
       list: table.tbody,
       logo,
       btnAdd: buttonGroup.btns[0],
       formOverlay: form.overlay,
+      form: form.form,
     };
   };
 
@@ -208,10 +210,17 @@ import { data } from '../../data.js';
     const app = document.querySelector(selector);
     const phoneBook = renderPhoneBook(app, title);
     const { list, logo, btnAdd, formOverlay } = phoneBook;
+
     const allRow = renderContacts(list, data);
     hoverRow(allRow, logo);
     btnAdd.addEventListener('click', () => {
       formOverlay.classList.add('is-visible');
+    });
+    const close = document.querySelector('.close');
+    formOverlay.addEventListener('click', (e) => {
+      if (e.target === formOverlay || e.target === close) {
+        formOverlay.classList.remove('is-visible');
+      }
     });
   };
 
