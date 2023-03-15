@@ -151,3 +151,8 @@ img {
   background-size: cover;
   background-position: center;
 }
+
+.th-surname,
+.th-name {
+  cursor: pointer;
+}
