@@ -17,14 +17,16 @@ import { data } from '../../data.js';
     header.classList.add('header');
     header.append(headerContainer);
     header.headerContainer = headerContainer;
+
     return header;
   };
 
-  const createLogo = (title) => {
+  const createLogo = title => {
     const h1 = document.createElement('h1');
 
     h1.classList.add('logo');
     h1.textContent = `Телефонный справочник. Пользователь - ${title}`;
+
     return h1;
   };
 
@@ -35,10 +37,11 @@ import { data } from '../../data.js';
     main.classList.add('main');
     main.mainContainer = mainContainer;
     main.append(mainContainer);
+
     return main;
   };
 
-  const createButtonsGroup = (params) => {
+  const createButtonsGroup = params => {
     const btnWrapper = document.createElement('div');
     btnWrapper.classList.add('btn-wrapper');
 
@@ -48,12 +51,15 @@ import { data } from '../../data.js';
       button.type = type;
       button.className = className;
       button.textContent = text;
+
       return button;
     });
+
     btnWrapper.append(...btns);
+
     return {
       btnWrapper,
-      btns,
+      btns
     };
   };
 
@@ -79,6 +85,7 @@ import { data } from '../../data.js';
 
     table.append(thead, tbody);
     table.tbody = tbody;
+
     return table;
   };
 
@@ -112,19 +119,19 @@ import { data } from '../../data.js';
       {
         className: 'btn btn-primary mr-3',
         type: 'submit',
-        text: 'Добавить',
+        text: 'Добавить'
       },
       {
         className: 'btn btn-danger',
         type: 'reset',
-        text: 'Отмена',
-      },
+        text: 'Отмена'
+      }
     ]);
     form.append(...buttonGroup.btns);
     overlay.append(form);
     return {
       overlay,
-      form,
+      form
     };
   };
 
@@ -135,6 +142,7 @@ import { data } from '../../data.js';
     copy.textContent = `Все права защищены ©Boris`;
     footer.append(copy);
     footer.classList.add('footer');
+
     return footer;
   };
 
@@ -142,22 +150,21 @@ import { data } from '../../data.js';
     const header = createHeader();
     const logo = createLogo(title);
     const main = createMain();
+    const table = createTable();
+    const form = createForm();
+    const footer = createFooter();
     const buttonGroup = createButtonsGroup([
       {
         className: 'btn btn-primary mr-3',
         type: 'button',
-        text: 'Добавить',
+        text: 'Добавить'
       },
       {
         className: 'btn btn-danger',
         type: 'button',
-        text: 'Удалить',
-      },
+        text: 'Удалить'
+      }
     ]);
-    const table = createTable();
-
-    const form = createForm();
-    const footer = createFooter();
 
     header.headerContainer.append(logo);
     main.mainContainer.append(buttonGroup.btnWrapper, table, form.overlay);
@@ -169,7 +176,7 @@ import { data } from '../../data.js';
       btnAdd: buttonGroup.btns[0],
       btnDel: buttonGroup.btns[1],
       formOverlay: form.overlay,
-      form: form.form,
+      form: form.form
     };
   };
 
@@ -198,21 +205,25 @@ import { data } from '../../data.js';
     tr.linkPhone = linkPhone;
     tdEdit.append(buttonEdit);
     tr.append(tdDel, tdName, tdSurename, tdPhone, tdEdit);
+
     return tr;
   };
 
   const renderContacts = (el, data) => {
     const allRow = data.map(createRow);
     el.append(...allRow);
+
     return allRow;
   };
 
   const hoverRow = (allRow, logo) => {
     const text = logo.textContent;
-    allRow.forEach((contact) => {
+
+    allRow.forEach(contact => {
       contact.addEventListener('mouseenter', () => {
         logo.textContent = contact.linkPhone.textContent;
       });
+
       contact.addEventListener('mouseleave', () => {
         logo.textContent = text;
       });
@@ -221,7 +232,8 @@ import { data } from '../../data.js';
 
   function sortTable(arr, prop, dir) {
     const arrCopy = [...arr];
-    return arrCopy.sort(function (stA, stB) {
+
+    return arrCopy.sort(function(stA, stB) {
       if (!dir == false ? stA[prop] < stB[prop] : stA[prop] > stB[prop])
         return -1;
     });
@@ -231,15 +243,23 @@ import { data } from '../../data.js';
     const app = document.querySelector(selector);
     const phoneBook = renderPhoneBook(app, title);
     const { list, logo, btnAdd, formOverlay, btnDel } = phoneBook;
-
     const allRow = renderContacts(list, data);
+    const close = document.querySelector('.close');
+    const thName = document.querySelector('.th-name');
+    const thSurName = document.querySelector('.th-surname');
+    let dir = true;
+    const sort = () => {
+      list.innerHTML = '';
+      renderContacts(list, sortTable(data, 'name', dir));
+      dir = !dir;
+    };
+
     hoverRow(allRow, logo);
     btnAdd.addEventListener('click', () => {
       formOverlay.classList.add('is-visible');
     });
 
-    const close = document.querySelector('.close');
-    formOverlay.addEventListener('click', (e) => {
+    formOverlay.addEventListener('click', e => {
       if (e.target === formOverlay || e.target === close) {
         formOverlay.classList.remove('is-visible');
       }
@@ -247,12 +267,12 @@ import { data } from '../../data.js';
 
     btnDel.addEventListener('click', () => {
       const allDelete = document.querySelectorAll('.delete');
-      allDelete.forEach((el) => {
+      allDelete.forEach(el => {
         el.classList.toggle('is-visible');
       });
     });
 
-    list.addEventListener('click', (e) => {
+    list.addEventListener('click', e => {
       if (e.target.closest('.del-icon')) {
         if (confirm('Точно хотите удалить ?')) {
           e.target.closest('.contact').remove();
@@ -269,20 +289,9 @@ import { data } from '../../data.js';
     //   list.append(contact);
     // }, 1000);
 
-    let dir = true;
-    const thName = document.querySelector('.th-name');
-    thName.addEventListener('click', () => {
-      list.innerHTML = '';
-      renderContacts(list, sortTable(data, 'name', dir));
-      dir = !dir;
-    });
+    thName.addEventListener('click', sort);
 
-    const thSurName = document.querySelector('.th-surname');
-    thSurName.addEventListener('click', () => {
-      list.innerHTML = '';
-      renderContacts(list, sortTable(data, 'name', dir));
-      dir = !dir;
-    });
+    thSurName.addEventListener('click', sort);
   };
 
   window.phoneBookInit = init;
